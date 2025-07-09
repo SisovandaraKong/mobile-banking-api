@@ -21,9 +21,6 @@ public class Account {
     @Column(unique = true, nullable = false)
     private String actNo;
 
-    @Column(nullable = false,length = 40)
-    private String actType;
-
     @Column(nullable = false)
     private String actCurrency;
 
@@ -40,4 +37,10 @@ public class Account {
     @ManyToOne
     @JoinColumn(name = "account_type_id")
     private AccountType accountType;
+
+    @OneToMany(mappedBy = "sender")
+    private List<Transaction> transactionSenders;
+
+    @OneToMany(mappedBy = "receiver")
+    private List<Transaction> transactionReceivers;
 }

@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 // Know Your Customer
 public class KYC {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     private String nationalCardId;
