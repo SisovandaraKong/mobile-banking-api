@@ -51,26 +51,17 @@ public class CustomerServiceImpl implements CustomerService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Customer's phone number already exists!") ;
         }
-
-        Customer customer = new Customer();
-        customer.setFullName(createCustomerRequest.fullName());
-        customer.setEmail(createCustomerRequest.email());
-        customer.setGender(createCustomerRequest.gender());
-        customer.setPhoneNumber(createCustomerRequest.phoneNumber());
-        customer.setRemark(createCustomerRequest.remark());
-        customer.setIsDeleted(false);
+        Customer customer = customerMapper.customerRequestToCustomer(createCustomerRequest);
         customer = customerRepository.save(customer);
         return customerMapper.mapFromCustomerToCustomerResponse(customer);
     }
 
     @Override
     public CustomerResponse updateCustomerById(Integer id, UpdateCustomer updateCustomer) {
-        Customer customer = customerRepository.findById(id).orElseThrow(()->
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(()->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer with id " + id + " does not exist"));
-        customer.setFullName(updateCustomer.fullName());
-        customer.setEmail(updateCustomer.email());
-        customer.setPhoneNumber(updateCustomer.phoneNumber());
-        customer.setRemark(updateCustomer.remark());
+        customerMapper.updateCustomerFromDto(updateCustomer, customer);
         customer = customerRepository.save(customer);
         return customerMapper.mapFromCustomerToCustomerResponse(customer);
     }
