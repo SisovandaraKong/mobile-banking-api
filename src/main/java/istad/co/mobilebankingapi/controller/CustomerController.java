@@ -25,7 +25,7 @@ public class CustomerController {
         return new ResponseEntity<>(Map.of(
                 "customers", customerService.getAllCustomers()), HttpStatus.OK);
     }
-    @GetMapping("{email}")
+    @GetMapping("/email/{email}")
     public ResponseEntity<?> getCustomerByEmail(@PathVariable String email) {
         return new ResponseEntity<>(customerService.getCustomerByEmail(email), HttpStatus.OK);
     }
@@ -36,12 +36,12 @@ public class CustomerController {
         , HttpStatus.CREATED);
     }
 
-    @PutMapping("{id}")
-    public ResponseEntity<?> updateCustomerById (@PathVariable Integer id, @RequestBody UpdateCustomer updateCustomerRequest) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCustomerById (@PathVariable Integer id, @Valid @RequestBody UpdateCustomer updateCustomerRequest) {
         return new ResponseEntity<>(customerService.updateCustomerById(id, updateCustomerRequest), HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCustomerById (@PathVariable Integer id) {
         customerService.deleteCustomerById(id);
         return new ResponseEntity<>(
