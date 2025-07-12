@@ -1,13 +1,15 @@
 package istad.co.mobilebankingapi.service.impl;
 
 import istad.co.mobilebankingapi.domain.Customer;
-import istad.co.mobilebankingapi.dto.CreateCustomerRequest;
-import istad.co.mobilebankingapi.dto.CustomerResponse;
-import istad.co.mobilebankingapi.dto.UpdateCustomer;
+import istad.co.mobilebankingapi.dto.customer.CreateCustomerRequest;
+import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
+import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 import istad.co.mobilebankingapi.mapper.CustomerMapper;
 import istad.co.mobilebankingapi.repository.CustomerRepository;
 import istad.co.mobilebankingapi.service.CustomerService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
@@ -30,11 +33,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponse getCustomerByEmail(String email) {
-        if(!customerRepository.existsByEmail(email)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Customer with email " + email + " does not exist");
-        }
-        Customer customer = customerRepository.findByEmail(email);
+        Customer customer = customerRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer's email not found"));
         return customerMapper.mapFromCustomerToCustomerResponse(customer);
     }
 
@@ -57,10 +57,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponse updateCustomerById(Integer id, UpdateCustomer updateCustomer) {
-        Customer customer = customerRepository.findById(id)
+    public CustomerResponse updateCustomerById(String uuid, UpdateCustomer updateCustomer) {
+        Customer customer = customerRepository.findByUuid(uuid)
                 .orElseThrow(()->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer with id " + id + " does not exist"));
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer with uuid " + uuid + " does not exist"));
         customerMapper.updateCustomerFromDto(updateCustomer, customer);
         customer = customerRepository.save(customer);
         return customerMapper.mapFromCustomerToCustomerResponse(customer);
@@ -74,4 +74,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
     customerRepository.deleteById(id);
     }
+
+    @Override
+    @Transactional
+    public void deleteCustomerByUuid(String uuid) {
+        if (!customerRepository.existsByUuid(uuid)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,  "Customer with uuid " + uuid + " does not exist");
+        }
+        customerRepository.deleteByUuid(uuid);
+    }
+
+    @Override
+    @Transactional
+    public void deleteCustomerByPhoneNumber(String phoneNumber) {
+        if (!customerRepository.existsByPhoneNumber(phoneNumber)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer with phone number "+ phoneNumber + "does not exist");
+        }
+        customerRepository.deleteByPhoneNumber(phoneNumber);
+    }
+
 }

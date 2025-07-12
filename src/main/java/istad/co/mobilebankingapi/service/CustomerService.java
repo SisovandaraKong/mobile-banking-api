@@ -1,9 +1,8 @@
 package istad.co.mobilebankingapi.service;
 
-import istad.co.mobilebankingapi.domain.Customer;
-import istad.co.mobilebankingapi.dto.CreateCustomerRequest;
-import istad.co.mobilebankingapi.dto.CustomerResponse;
-import istad.co.mobilebankingapi.dto.UpdateCustomer;
+import istad.co.mobilebankingapi.dto.customer.CreateCustomerRequest;
+import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
+import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 
 import java.util.List;
 
@@ -11,6 +10,8 @@ public interface CustomerService {
     List<CustomerResponse> getAllCustomers();
     CustomerResponse getCustomerByEmail(String email);
     CustomerResponse createCustomer(CreateCustomerRequest createCustomerRequest);
-    CustomerResponse updateCustomerById(Integer id, UpdateCustomer updateCustomer);
+    CustomerResponse updateCustomerById(String uuid, UpdateCustomer updateCustomer);
     void deleteCustomerById(Integer id);
+    void deleteCustomerByUuid(String uuid);
+    void deleteCustomerByPhoneNumber(String phoneNumber);
 }

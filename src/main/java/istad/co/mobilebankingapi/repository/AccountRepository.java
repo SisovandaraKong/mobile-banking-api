@@ -1,8 +1,14 @@
 package istad.co.mobilebankingapi.repository;
 
 import istad.co.mobilebankingapi.domain.Account;
+import istad.co.mobilebankingapi.domain.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AccountRepository extends JpaRepository<Account, Integer> {
+import java.util.Optional;
 
+public interface AccountRepository extends JpaRepository<Account, Integer> {
+    boolean existsByActNo(String actNo);
+    Optional<Account> findByActNo(String actNo);
+    Optional<Account> findByCustomer(Customer customer);
+    void deleteByActNo(String actNo);
 }

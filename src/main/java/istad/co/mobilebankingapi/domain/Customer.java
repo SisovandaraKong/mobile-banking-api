@@ -12,6 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -22,6 +23,9 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(unique = true, nullable = false)
+    private String uuid = UUID.randomUUID().toString();
 
     @Column(nullable = false)
     private String fullName;
@@ -38,7 +42,7 @@ public class Customer {
     private String remark;
 
     @Column(nullable = false)
-    private Boolean isDeleted =false;
+    private Boolean isDeleted = false;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

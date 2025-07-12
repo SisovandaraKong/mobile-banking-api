@@ -1,17 +1,14 @@
 package istad.co.mobilebankingapi.controller;
 
-import istad.co.mobilebankingapi.dto.CreateCustomerRequest;
-import istad.co.mobilebankingapi.dto.CustomerResponse;
-import istad.co.mobilebankingapi.dto.UpdateCustomer;
+import istad.co.mobilebankingapi.dto.customer.CreateCustomerRequest;
+import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 import istad.co.mobilebankingapi.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.*;
 import java.util.Map;
 
 @RestController
@@ -36,18 +33,25 @@ public class CustomerController {
         , HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateCustomerById (@PathVariable Integer id, @Valid @RequestBody UpdateCustomer updateCustomerRequest) {
-        return new ResponseEntity<>(customerService.updateCustomerById(id, updateCustomerRequest), HttpStatus.OK);
+    @PutMapping("/{uuid}")
+    public ResponseEntity<?> updateCustomerById (@PathVariable String uuid, @Valid @RequestBody UpdateCustomer updateCustomerRequest) {
+        return new ResponseEntity<>(customerService.updateCustomerById(uuid, updateCustomerRequest), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCustomerById (@PathVariable Integer id) {
-        customerService.deleteCustomerById(id);
-        return new ResponseEntity<>(
-                Map.of(
-                        "message", "Customer deleted successfully"
-                ),
-                HttpStatus.OK);
+
+    @DeleteMapping("/{uuid}")
+    public ResponseEntity<?> deleteCustomerByUuid (@PathVariable String uuid) {
+        customerService.deleteCustomerByUuid(uuid);
+        return new ResponseEntity<>(Map.of(
+                "message", "Customer deleted successfully"
+        ),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/phone-number/{phoneNumber}")
+    public ResponseEntity<?> deleteCustomerByPhoneNumber (@PathVariable String phoneNumber) {
+        customerService.deleteCustomerByPhoneNumber(phoneNumber);
+        return new ResponseEntity<>(Map.of(
+                "message", "Customer deleted successfully"
+        ),HttpStatus.OK);
     }
 }
