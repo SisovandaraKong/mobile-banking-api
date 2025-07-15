@@ -5,24 +5,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "kycs")
-// Know Your Customer
-public class KYC {
+@Data
+@Table(name = "segments")
+public class Segment {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String nationalCardId;
+    private String segment;
 
-    private Boolean isVerified = false;
+    @OneToMany(mappedBy = "segment")
+    private List<Customer> customers;
 
     private Boolean isDeleted = false;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
 }

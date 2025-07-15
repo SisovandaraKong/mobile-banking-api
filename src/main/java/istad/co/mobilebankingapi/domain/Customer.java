@@ -41,6 +41,10 @@ public class Customer {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String remark;
 
+    @ManyToOne
+    @JoinColumn(name = "segment_id")
+    private Segment segment;
+
     @Column(nullable = false)
     private Boolean isDeleted = false;
 

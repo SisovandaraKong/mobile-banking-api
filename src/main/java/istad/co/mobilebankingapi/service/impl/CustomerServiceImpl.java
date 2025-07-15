@@ -1,11 +1,15 @@
 package istad.co.mobilebankingapi.service.impl;
 
 import istad.co.mobilebankingapi.domain.Customer;
+import istad.co.mobilebankingapi.domain.KYC;
+import istad.co.mobilebankingapi.domain.Segment;
 import istad.co.mobilebankingapi.dto.customer.CreateCustomerRequest;
 import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
 import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 import istad.co.mobilebankingapi.mapper.CustomerMapper;
 import istad.co.mobilebankingapi.repository.CustomerRepository;
+import istad.co.mobilebankingapi.repository.KYCRepository;
+import istad.co.mobilebankingapi.repository.SegmentRepository;
 import istad.co.mobilebankingapi.service.CustomerService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +26,8 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
+    private final SegmentRepository segmentRepository;
+    private final KYCRepository kycRepository;
 
     @Override
     public List<CustomerResponse> getAllCustomers() {
@@ -51,7 +57,19 @@ public class CustomerServiceImpl implements CustomerService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Customer's phone number already exists!") ;
         }
-        Customer customer = customerMapper.customerRequestToCustomer(createCustomerRequest);
+        Customer customer = new Customer();
+        customer.setEmail(createCustomerRequest.email());
+        customer.setPhoneNumber(createCustomerRequest.phoneNumber());
+        customer.setGender(createCustomerRequest.gender());
+        customer.setRemark(createCustomerRequest.remark());
+        customer.setFullName(createCustomerRequest.fullName());
+        Segment segment = segmentRepository.findBySegment(createCustomerRequest.segment()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Segment not found"));
+        customer.setSegment(segment);
+        KYC kyc = new KYC();
+        kyc.setNationalCardId(createCustomerRequest.nationalCardId());
+        kyc.setIsVerified(false);
+        kyc.setCustomer(customer);
+        customer.setKyc(kyc);
         customer = customerRepository.save(customer);
         return customerMapper.mapFromCustomerToCustomerResponse(customer);
     }

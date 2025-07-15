@@ -14,4 +14,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     Optional<Customer> findByUuid(String uuid);
     Optional<Customer> findByPhoneNumber(String phoneNumber);
     void deleteByPhoneNumber(String phoneNumber);
+    Optional<Customer> findCustomerByKyc_NationalCardId(String nationalCardId);
 }

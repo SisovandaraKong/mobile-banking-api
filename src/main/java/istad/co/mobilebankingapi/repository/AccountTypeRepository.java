@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface AccountTypeRepository extends JpaRepository<AccountType, Integer> {
     Optional<AccountType> findByUuid(String uuid);
     boolean existsByName(String name);
+    boolean existsByUuid(String uuid);
 }

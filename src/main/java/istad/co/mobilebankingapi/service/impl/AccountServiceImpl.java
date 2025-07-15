@@ -42,11 +42,20 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse createAccount(AccountRequest accountRequest) {
+        if (accountRepository.existsByAccountType_Uuid(accountRequest.accountTypeUuid())){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account type already exists");
+        }
+
         Customer customer = customerRepository.findByPhoneNumber(accountRequest.customerPhoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
 
         AccountType accountType = accountTypeRepository.findByUuid(accountRequest.accountTypeUuid())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account type not found"));
+
+//        if (accountRepository.existsByAccountType(accountType)) {
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account type already exists");
+//        }
+
 
         Account account = new Account();
         String actNo;
@@ -100,7 +109,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void disableAccountByActNo(String actNo) {
     Account account = accountRepository.findByActNo(actNo)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account's number not found"));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found"));
+    if (account.getIsDeleted().equals(true)) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Account is already deleted");
+    }
     account.setIsDeleted(true);
     accountRepository.save(account);
     }
