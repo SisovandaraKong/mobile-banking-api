@@ -3,6 +3,7 @@ package istad.co.mobilebankingapi.controller;
 import istad.co.mobilebankingapi.domain.Account;
 import istad.co.mobilebankingapi.dto.account.AccountRequest;
 import istad.co.mobilebankingapi.dto.account.AccountUpdate;
+import istad.co.mobilebankingapi.dto.account.Withdraw;
 import istad.co.mobilebankingapi.repository.AccountRepository;
 import istad.co.mobilebankingapi.service.AccountService;
 import istad.co.mobilebankingapi.service.AccountTypeService;
@@ -68,6 +69,14 @@ public class AccountController {
                  Map.of(
                          "message", "Account has been disabled successfully"
                  ),HttpStatus.OK);
+    }
+
+    @PutMapping("/withdraw/{act}")
+    public ResponseEntity<?> withdrawAccountByActNo(@PathVariable String act, @Valid @RequestBody Withdraw withdraw) {
+        accountService.withdrawAccountByActNo(act, withdraw);
+        return new ResponseEntity<>(Map.of(
+                "Account "+act, "Account has been withdrawn successfully"
+        ), HttpStatus.CREATED);
     }
 
 

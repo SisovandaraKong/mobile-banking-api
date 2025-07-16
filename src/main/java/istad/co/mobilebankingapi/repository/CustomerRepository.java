@@ -15,4 +15,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
     Optional<Customer> findByPhoneNumber(String phoneNumber);
     void deleteByPhoneNumber(String phoneNumber);
     Optional<Customer> findCustomerByKyc_NationalCardId(String nationalCardId);
+    Optional<Customer> findCustomerBySegment_Segment(String segment);
+    boolean existsCustomerByKyc_IsVerified(Boolean isVerified);
+
+    boolean existsByPin(Integer pin);
 }

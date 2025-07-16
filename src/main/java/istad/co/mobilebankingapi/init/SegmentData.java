@@ -1,4 +1,4 @@
-package istad.co.mobilebankingapi.Utils;
+package istad.co.mobilebankingapi.init;
 
 import istad.co.mobilebankingapi.domain.Segment;
 import istad.co.mobilebankingapi.repository.SegmentRepository;

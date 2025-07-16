@@ -4,6 +4,7 @@ import istad.co.mobilebankingapi.domain.Account;
 import istad.co.mobilebankingapi.dto.account.AccountRequest;
 import istad.co.mobilebankingapi.dto.account.AccountResponse;
 import istad.co.mobilebankingapi.dto.account.AccountUpdate;
+import istad.co.mobilebankingapi.dto.account.Withdraw;
 
 import java.util.List;
 
@@ -15,4 +16,5 @@ public interface AccountService {
     void deleteAccountByActNo(String actNo);
     AccountResponse updateAccountByActNo(String actNo, AccountUpdate accountUpdate);
     void disableAccountByActNo(String actNo);
+    void withdrawAccountByActNo(String actNo, Withdraw withdraw);
 }

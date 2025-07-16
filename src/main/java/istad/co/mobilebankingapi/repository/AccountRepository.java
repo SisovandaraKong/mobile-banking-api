@@ -13,6 +13,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     Optional<Account> findByCustomer(Customer customer);
     void deleteByActNo(String actNo);
     boolean existsByAccountType(AccountType accountType);
-
     boolean existsByAccountType_Uuid(String uuid);
 }

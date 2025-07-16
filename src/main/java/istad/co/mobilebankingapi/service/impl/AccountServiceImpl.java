@@ -3,9 +3,11 @@ package istad.co.mobilebankingapi.service.impl;
 import istad.co.mobilebankingapi.domain.Account;
 import istad.co.mobilebankingapi.domain.AccountType;
 import istad.co.mobilebankingapi.domain.Customer;
+import istad.co.mobilebankingapi.domain.Segment;
 import istad.co.mobilebankingapi.dto.account.AccountRequest;
 import istad.co.mobilebankingapi.dto.account.AccountResponse;
 import istad.co.mobilebankingapi.dto.account.AccountUpdate;
+import istad.co.mobilebankingapi.dto.account.Withdraw;
 import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
 import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 import istad.co.mobilebankingapi.mapper.AccountMapper;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
@@ -49,6 +52,10 @@ public class AccountServiceImpl implements AccountService {
         Customer customer = customerRepository.findByPhoneNumber(accountRequest.customerPhoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
 
+        if (customerRepository.existsCustomerByKyc_IsVerified(false)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer need to verified");
+        }
+
         AccountType accountType = accountTypeRepository.findByUuid(accountRequest.accountTypeUuid())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account type not found"));
 
@@ -64,6 +71,12 @@ public class AccountServiceImpl implements AccountService {
         } while (accountRepository.existsByActNo(actNo));
         account.setActNo(actNo);
         account.setActCurrency(accountRequest.actCurrency());
+        String segment = customer.getSegment().getSegment();
+        switch (segment){
+            case "Regular" -> account.setOverLimit(BigDecimal.valueOf(5000));
+            case "Silver" -> account.setOverLimit(BigDecimal.valueOf(10000));
+            case "Gold" -> account.setOverLimit(BigDecimal.valueOf(50000));
+        }
         account.setCustomer(customer);
         account.setAccountType(accountType);
         account = accountRepository.save(account);
@@ -101,6 +114,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse updateAccountByActNo(String actNo, AccountUpdate accountUpdate) {
         Account account = accountRepository.findByActNo(actNo)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account's number not found"));
+
         account.setBalance(accountUpdate.balance());
         account = accountRepository.save(account);
         return accountMapper.toAccountResponse(account);
@@ -115,5 +129,16 @@ public class AccountServiceImpl implements AccountService {
     }
     account.setIsDeleted(true);
     accountRepository.save(account);
+    }
+
+    @Override
+    public void withdrawAccountByActNo(String actNo, Withdraw withdraw) {
+        if (!customerRepository.existsByPin(withdraw.pin())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account pin is not valid");
+        }
+        Account account = accountRepository.findByActNo(actNo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account's number not found"));
+        account.setBalance(account.getBalance().subtract(withdraw.balance()));
+        accountRepository.save(account);
     }
 }

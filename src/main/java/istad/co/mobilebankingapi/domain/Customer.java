@@ -27,6 +27,9 @@ public class Customer {
     @Column(unique = true, nullable = false)
     private String uuid = UUID.randomUUID().toString();
 
+    @Column(nullable = false, length = 4)
+    private Integer pin;
+
     @Column(nullable = false)
     private String fullName;
 

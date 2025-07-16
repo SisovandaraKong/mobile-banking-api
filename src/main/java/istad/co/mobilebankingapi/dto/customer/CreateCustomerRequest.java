@@ -1,10 +1,13 @@
 package istad.co.mobilebankingapi.dto.customer;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record CreateCustomerRequest(
+        @Max(9999)
+        Integer pin,
         @NotBlank(message = "Full name is required")
             @Size(min = 2, max = 50, message = "Full name must be between 2 and 50 characters")
         String fullName,

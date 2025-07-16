@@ -1,12 +1,15 @@
 package istad.co.mobilebankingapi.service.impl;
 
+import istad.co.mobilebankingapi.domain.Account;
 import istad.co.mobilebankingapi.domain.Customer;
 import istad.co.mobilebankingapi.domain.KYC;
 import istad.co.mobilebankingapi.domain.Segment;
+import istad.co.mobilebankingapi.dto.account.Withdraw;
 import istad.co.mobilebankingapi.dto.customer.CreateCustomerRequest;
 import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
 import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 import istad.co.mobilebankingapi.mapper.CustomerMapper;
+import istad.co.mobilebankingapi.repository.AccountRepository;
 import istad.co.mobilebankingapi.repository.CustomerRepository;
 import istad.co.mobilebankingapi.repository.KYCRepository;
 import istad.co.mobilebankingapi.repository.SegmentRepository;
@@ -28,6 +31,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerMapper customerMapper;
     private final SegmentRepository segmentRepository;
     private final KYCRepository kycRepository;
+    private final AccountRepository accountRepository;
 
     @Override
     public List<CustomerResponse> getAllCustomers() {
@@ -58,6 +62,7 @@ public class CustomerServiceImpl implements CustomerService {
                     "Customer's phone number already exists!") ;
         }
         Customer customer = new Customer();
+        customer.setPin(createCustomerRequest.pin());
         customer.setEmail(createCustomerRequest.email());
         customer.setPhoneNumber(createCustomerRequest.phoneNumber());
         customer.setGender(createCustomerRequest.gender());
