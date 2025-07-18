@@ -11,6 +11,7 @@ import istad.co.mobilebankingapi.dto.account.Withdraw;
 import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
 import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
 import istad.co.mobilebankingapi.enums.AccountTypeName;
+import istad.co.mobilebankingapi.enums.CurrencyName;
 import istad.co.mobilebankingapi.enums.SegmentName;
 import istad.co.mobilebankingapi.mapper.AccountMapper;
 import istad.co.mobilebankingapi.repository.AccountRepository;
@@ -76,7 +77,8 @@ public class AccountServiceImpl implements AccountService {
             actNo = String.format("%09d", new Random().nextInt(1_000_000_000)); // Max: 999,999,999
         } while (accountRepository.existsByActNo(actNo));
         account.setActNo(actNo);
-        account.setActCurrency(accountRequest.actCurrency());
+        CurrencyName currencyName = CurrencyName.valueOf(accountRequest.actCurrency().toUpperCase());
+        account.setActCurrency(currencyName);
         SegmentName segment = customer.getSegment().getSegment();
         switch (segment){
             case SegmentName.REGULAR -> account.setOverLimit(BigDecimal.valueOf(5000));

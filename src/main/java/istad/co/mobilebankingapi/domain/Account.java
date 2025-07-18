@@ -1,5 +1,6 @@
 package istad.co.mobilebankingapi.domain;
 
+import istad.co.mobilebankingapi.enums.CurrencyName;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +24,8 @@ public class Account {
     private String actNo;
 
     @Column(nullable = false)
-    private String actCurrency;
+    @Enumerated(EnumType.STRING)
+    private CurrencyName actCurrency;
 
     @Column(nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
