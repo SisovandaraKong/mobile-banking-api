@@ -1,15 +1,15 @@
 package istad.co.mobilebankingapi.domain;
 
+import istad.co.mobilebankingapi.enums.AccountTypeName;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "account_types")
@@ -22,7 +22,8 @@ public class AccountType {
     private String uuid= UUID.randomUUID().toString();
 
     @Column(unique = true, nullable = false, length = 30)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    private AccountTypeName name;
 
     @Column(nullable = false)
     private Boolean isDeleted = false;

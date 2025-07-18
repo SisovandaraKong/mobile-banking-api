@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface KYCRepository extends JpaRepository<KYC, Integer> {
     Optional<KYC> findByNationalCardId(String nationalCardId);
     Optional<KYC> findByCustomer(Customer customer);
+    boolean existsByNationalCardId(String nationalCardId);
 }

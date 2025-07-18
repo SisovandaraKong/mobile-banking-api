@@ -1,16 +1,16 @@
 package istad.co.mobilebankingapi.domain;
 
+import istad.co.mobilebankingapi.enums.SegmentName;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Setter
+@Getter
 @Table(name = "segments")
 public class Segment {
 
@@ -18,7 +18,8 @@ public class Segment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String segment;
+    @Enumerated(EnumType.STRING)
+    private SegmentName segment;
 
     @OneToMany(mappedBy = "segment")
     private List<Customer> customers;

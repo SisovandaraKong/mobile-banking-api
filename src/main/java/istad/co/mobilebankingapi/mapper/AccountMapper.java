@@ -16,6 +16,5 @@ public interface AccountMapper {
     @Mapping(source = "customer", target = "customer")
     @Mapping(source = "accountType.name", target = "accountTypeName")
     AccountResponse toAccountResponse(Account account);
-
-    Account fromAccountRequest(AccountRequest accountRequest);
+    
 }

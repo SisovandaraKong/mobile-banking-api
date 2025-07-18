@@ -1,5 +1,6 @@
 package istad.co.mobilebankingapi.dto.customer;
 
+import istad.co.mobilebankingapi.enums.SegmentName;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;

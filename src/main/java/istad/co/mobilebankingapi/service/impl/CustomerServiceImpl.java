@@ -8,6 +8,7 @@ import istad.co.mobilebankingapi.dto.account.Withdraw;
 import istad.co.mobilebankingapi.dto.customer.CreateCustomerRequest;
 import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
 import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
+import istad.co.mobilebankingapi.enums.SegmentName;
 import istad.co.mobilebankingapi.mapper.CustomerMapper;
 import istad.co.mobilebankingapi.repository.AccountRepository;
 import istad.co.mobilebankingapi.repository.CustomerRepository;
@@ -37,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<CustomerResponse> getAllCustomers() {
         List<Customer> customers = customerRepository.findAll();
         return customers.stream()
-                .map(customer -> customerMapper.mapFromCustomerToCustomerResponse(customer))
+                .map(customerMapper::mapFromCustomerToCustomerResponse)
                 .toList();
     }
 
@@ -68,8 +69,14 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setGender(createCustomerRequest.gender());
         customer.setRemark(createCustomerRequest.remark());
         customer.setFullName(createCustomerRequest.fullName());
-        Segment segment = segmentRepository.findBySegment(createCustomerRequest.segment()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Segment not found"));
+        SegmentName segmentEnum = SegmentName.valueOf(createCustomerRequest.segment().toUpperCase());;
+
+
+        Segment segment = segmentRepository.findBySegment(segmentEnum)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Segment not found"));
+
         customer.setSegment(segment);
+
         KYC kyc = new KYC();
         kyc.setNationalCardId(createCustomerRequest.nationalCardId());
         kyc.setIsVerified(false);

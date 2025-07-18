@@ -10,10 +10,13 @@ import istad.co.mobilebankingapi.dto.account.AccountUpdate;
 import istad.co.mobilebankingapi.dto.account.Withdraw;
 import istad.co.mobilebankingapi.dto.customer.CustomerResponse;
 import istad.co.mobilebankingapi.dto.customer.UpdateCustomer;
+import istad.co.mobilebankingapi.enums.AccountTypeName;
+import istad.co.mobilebankingapi.enums.SegmentName;
 import istad.co.mobilebankingapi.mapper.AccountMapper;
 import istad.co.mobilebankingapi.repository.AccountRepository;
 import istad.co.mobilebankingapi.repository.AccountTypeRepository;
 import istad.co.mobilebankingapi.repository.CustomerRepository;
+import istad.co.mobilebankingapi.repository.SegmentRepository;
 import istad.co.mobilebankingapi.service.AccountService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +36,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final CustomerRepository customerRepository;
     private final AccountTypeRepository accountTypeRepository;
+    private final SegmentRepository segmentRepository;
 
     @Override
     public List<AccountResponse> getAllAccounts() {
@@ -45,9 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse createAccount(AccountRequest accountRequest) {
-        if (accountRepository.existsByAccountType_Uuid(accountRequest.accountTypeUuid())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account type already exists");
-        }
+
 
         Customer customer = customerRepository.findByPhoneNumber(accountRequest.customerPhoneNumber())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
@@ -55,9 +57,13 @@ public class AccountServiceImpl implements AccountService {
         if (customerRepository.existsCustomerByKyc_IsVerified(false)){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Customer need to verified");
         }
+        AccountTypeName accountTypeName = AccountTypeName.valueOf(accountRequest.accountType().toUpperCase());
+        if (!accountTypeRepository.existsByName(accountTypeName)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account type not found");
+        }
 
-        AccountType accountType = accountTypeRepository.findByUuid(accountRequest.accountTypeUuid())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account type not found"));
+        AccountType accountType = accountTypeRepository.findByName(accountTypeName)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account type name not found"));
 
 //        if (accountRepository.existsByAccountType(accountType)) {
 //            throw new ResponseStatusException(HttpStatus.CONFLICT, "Account type already exists");
@@ -71,11 +77,11 @@ public class AccountServiceImpl implements AccountService {
         } while (accountRepository.existsByActNo(actNo));
         account.setActNo(actNo);
         account.setActCurrency(accountRequest.actCurrency());
-        String segment = customer.getSegment().getSegment();
+        SegmentName segment = customer.getSegment().getSegment();
         switch (segment){
-            case "Regular" -> account.setOverLimit(BigDecimal.valueOf(5000));
-            case "Silver" -> account.setOverLimit(BigDecimal.valueOf(10000));
-            case "Gold" -> account.setOverLimit(BigDecimal.valueOf(50000));
+            case SegmentName.REGULAR -> account.setOverLimit(BigDecimal.valueOf(5000));
+            case SegmentName.SILVER -> account.setOverLimit(BigDecimal.valueOf(10000));
+            case SegmentName.GOLD-> account.setOverLimit(BigDecimal.valueOf(50000));
         }
         account.setCustomer(customer);
         account.setAccountType(accountType);
