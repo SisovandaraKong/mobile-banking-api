@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.keycloak:keycloak-admin-client:26.0.6'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     compileOnly("org.mapstruct:mapstruct:1.6.3")
